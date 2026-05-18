@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CampusHub </title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'purple-custom': '#7C3AED',
+            'purple-light': '#A78BFA',
+            'white-custom': '#FFFFFF',
+            'gray-soft': '#F3F4F6'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .gradient-bg {
+      background: linear-gradient(
+        135deg,
+        #7C3AED 0%,
+        #A78BFA 50%,
+        #FFFFFF 100%
+      );
+    }
+
+    .card-hover {
+      transition: all 0.3s ease;
+    }
+
+    .card-hover:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(124, 58, 237, 0.2);
+    }
+
+    .event-card {
+      box-shadow: 0 10px 25px rgba(124, 58, 237, 0.08);
+    }
+  </style>
+</head>
+
+<body class="bg-white text-gray-800 min-h-screen overflow-x-hidden">
+
+  <!-- HEADER -->
+  <header class="gradient-bg shadow-lg sticky top-0 z-50">
+    <div class="container mx-auto px-6 py-4">
+
+      <div class="flex items-center justify-between">
+
+        <h1 class="text-3xl font-bold text-white">
+          CampusHub
+        </h1>
+
+        <nav class="relative">
+
+          <button
+            id="categoriesBtn"
+            class="bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
+          >
+            Event Categories ▼
+          </button>
+
+          <!-- DROPDOWN -->
+          <div
+            id="categoriesDropdown"
+            class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-purple-300 hidden"
+          >
+
+            <div class="py-2">
+
+              <a href="#technology"
+                class="block px-4 py-3 hover:bg-purple-100 transition-colors category-link">
+                🖥️ Technology & Programming
+              </a>
+
+              <a href="#business"
+                class="block px-4 py-3 hover:bg-purple-100 transition-colors category-link">
+                💼 Business & Marketing
+              </a>
+
+              <a href="#design"
+                class="block px-4 py-3 hover:bg-purple-100 transition-colors category-link">
+                🎨 Design & Creative
+              </a>
+
+              <a href="#health"
+                class="block px-4 py-3 hover:bg-purple-100 transition-colors category-link">
+                🏥 Health & Wellness
+              </a>
+
+              <a href="#education"
+                class="block px-4 py-3 hover:bg-purple-100 transition-colors category-link">
+                📚 Education & Learning
+              </a>
+
+            </div>
+          </div>
+
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="container mx-auto px-6 py-8">
+
+    <!-- HERO -->
+    <section class="text-center mb-14">
+
+      <h2 class="text-5xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-purple-400 bg-clip-text text-transparent">
+        Discover Amazing Events
+      </h2>
+
+      <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+        Empowering You Through Events That Inspire, Educate, and Connect.
+      </p>
+
+    </section>
+
+    <!-- TECHNOLOGY -->
+    <section id="technology" class="mb-16">
+
+      <h3 class="text-3xl font-bold mb-8 text-purple-700 border-b-2 border-purple-300 pb-2">
+        🖥️ Technology & Programming
+      </h3>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+        <!-- CARD -->
+        <div class="bg-white rounded-xl p-6 border border-purple-300 card-hover event-card">
+
+          <div class="mb-4">
+            <h4 class="text-xl font-bold text-purple-700 mb-2">
+              Full Stack Web Development Bootcamp
+            </h4>
+
+            <div class="space-y-2 text-sm text-gray-600">
+              <p><span class="text-purple-500">📅 Date:</span> March 15-17, 2024</p>
+              <p><span class="text-purple-500">⏰ Time:</span> 9:00 AM - 5:00 PM</p>
+              <p><span class="text-purple-500">💺 Seats:</span> 50 Available</p>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <h5 class="font-semibold text-purple-700 mb-2">
+              📦 Materials Provided:
+            </h5>
+
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>• Laptop with pre-installed software</li>
+              <li>• Course materials & templates</li>
+              <li>• Lunch & refreshments</li>
+            </ul>
+          </div>
+
+          <div class="mb-6">
+            <h5 class="font-semibold text-purple-700 mb-2">
+              🎯 Benefits:
+            </h5>
+
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>• Build 3 complete web applications</li>
+              <li>• Certificate of completion</li>
+              <li>• Job placement assistance</li>
+            </ul>
+          </div>
+
+          <button
+            onclick="openRegistration('Full Stack Web Development Bootcamp')"
+            class="w-full bg-purple-500 hover:bg-purple-600 text-white py-3 rounded-lg font-semibold transition-colors"
+          >
+            Register Now
+          </button>
+
+        </div>
+
+        <!-- CARD -->
+        <div class="bg-white rounded-xl p-6 border border-purple-300 card-hover event-card">
+
+          <div class="mb-4">
+            <h4 class="text-xl font-bold text-purple-700 mb-2">
+              AI & Machine Learning Workshop
+            </h4>
+
+            <div class="space-y-2 text-sm text-gray-600">
+              <p><span class="text-purple-500">📅 Date:</span> March 22, 2024</p>
+              <p><span class="text-purple-500">⏰ Time:</span> 10:00 AM - 4:00 PM</p>
+              <p><span class="text-purple-500">💺 Seats:</span> 30 Available</p>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <h5 class="font-semibold text-purple-700 mb-2">
+              📦 Materials Provided:
+            </h5>
+
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>• GPU-enabled cloud access</li>
+              <li>• Python libraries & datasets</li>
+              <li>• Workshop handbook</li>
+            </ul>
+          </div>
+
+          <div class="mb-6">
+            <h5 class="font-semibold text-purple-700 mb-2">
+              🎯 Benefits:
+            </h5>
+
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>• Hands-on ML model building</li>
+              <li>• Portfolio project completion</li>
+              <li>• Networking opportunities</li>
+            </ul>
+          </div>
+
+          <button
+            onclick="openRegistration('AI & Machine Learning Workshop')"
+            class="w-full bg-purple-500 hover:bg-purple-600 text-white py-3 rounded-lg font-semibold transition-colors"
+          >
+            Register Now
+          </button>
+
+        </div>
+
+        <!-- CARD -->
+        <div class="bg-white rounded-xl p-6 border border-purple-300 card-hover event-card">
+
+          <div class="mb-4">
+            <h4 class="text-xl font-bold text-purple-700 mb-2">
+              Cybersecurity Essentials Bootcamp
+            </h4>
+
+            <div class="space-y-2 text-sm text-gray-600">
+              <p><span class="text-purple-500">📅 Date:</span> April 10-12, 2024</p>
+              <p><span class="text-purple-500">⏰ Time:</span> 9:00 AM - 3:00 PM</p>
+              <p><span class="text-purple-500">💺 Seats:</span> 40 Available</p>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <h5 class="font-semibold text-purple-700 mb-2">
+              📦 Materials Provided:
+            </h5>
+
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>• Virtual lab access</li>
+              <li>• Network security guides</li>
+              <li>• Real-world attack simulations</li>
+            </ul>
+          </div>
+
+          <div class="mb-6">
+            <h5 class="font-semibold text-purple-700 mb-2">
+              🎯 Benefits:
+            </h5>
+
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>• Learn ethical hacking</li>
+              <li>• Secure coding practices</li>
+              <li>• Preparation for CEH exam</li>
+            </ul>
+          </div>
+
+          <button
+            onclick="openRegistration('Cybersecurity Essentials Bootcamp')"
+            class="w-full bg-purple-500 hover:bg-purple-600 text-white py-3 rounded-lg font-semibold transition-colors"
+          >
+            Register Now
+          </button>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- BUSINESS -->
+    <section id="business" class="mb-16">
+
+      <h3 class="text-3xl font-bold mb-8 text-purple-700 border-b-2 border-purple-300 pb-2">
+        💼 Business & Marketing
+      </h3>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+        <div class="bg-white rounded-xl p-6 border border-purple-300 card-hover event-card">
+
+          <div class="mb-4">
+            <h4 class="text-xl font-bold text-purple-700 mb-2">
+              Digital Marketing Mastery
+            </h4>
+
+            <div class="space-y-2 text-sm text-gray-600">
+              <p><span class="text-purple-500">📅 Date:</span> March 25-26, 2024</p>
+              <p><span class="text-purple-500">⏰ Time:</span> 9:30 AM - 4:30 PM</p>
+              <p><span class="text-purple-500">💺 Seats:</span> 40 Available</p>
+            </div>
+          </div>
+
+          <div class="mb-6">
+            <h5 class="font-semibold text-purple-700 mb-2">
+              🎯 Benefits:
+            </h5>
+
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>• Complete marketing strategy</li>
+              <li>• ROI tracking techniques</li>
+              <li>• Certification included</li>
+            </ul>
+          </div>
+
+          <button
+            onclick="openRegistration('Digital Marketing Mastery')"
+            class="w-full bg-purple-500 hover:bg-purple-600 text-white py-3 rounded-lg font-semibold transition-colors"
+          >
+            Register Now
+          </button>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- DESIGN -->
+    <section id="design" class="mb-16">
+
+      <h3 class="text-3xl font-bold mb-8 text-purple-700 border-b-2 border-purple-300 pb-2">
+        🎨 Design & Creative
+      </h3>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+        <div class="bg-white rounded-xl p-6 border border-purple-300 card-hover event-card">
+
+          <div class="mb-4">
+            <h4 class="text-xl font-bold text-purple-700 mb-2">
+              UI/UX Design Intensive
+            </h4>
+
+            <div class="space-y-2 text-sm text-gray-600">
+              <p><span class="text-purple-500">📅 Date:</span> April 1-3, 2024</p>
+              <p><span class="text-purple-500">⏰ Time:</span> 10:00 AM - 6:00 PM</p>
+              <p><span class="text-purple-500">💺 Seats:</span> 25 Available</p>
+            </div>
+          </div>
+
+          <button
+            onclick="openRegistration('UI/UX Design Intensive')"
+            class="w-full bg-purple-500 hover:bg-purple-600 text-white py-3 rounded-lg font-semibold transition-colors"
+          >
+            Register Now
+          </button>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL -->
+  <div
+    id="registrationModal"
+    class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4"
+  >
+
+    <div class="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+
+      <div class="p-6 border-b border-purple-300">
+
+        <div class="flex justify-between items-center">
+
+          <h3 class="text-2xl font-bold text-purple-700">
+            Event Registration
+          </h3>
+
+          <button
+            onclick="closeRegistration()"
+            class="text-gray-500 hover:text-black text-2xl"
+          >
+            ×
+          </button>
+
+        </div>
+
+        <p id="eventTitle" class="text-gray-600 mt-2"></p>
+
+      </div>
+
+      <div class="p-6">
+
+        <div class="bg-purple-50 rounded-lg p-4">
+
+          <h4 class="font-bold text-lg mb-4 text-purple-700">
+            Event Registration Form
+          </h4>
+
+          <div class="space-y-4">
+
+            <input
+              type="text"
+              placeholder="Full Name"
+              class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
+            />
+
+            <input
+              type="email"
+              placeholder="Email Address"
+              class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
+            />
+
+            <input
+              type="tel"
+              placeholder="Phone Number"
+              class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
+            />
+
+            <button
+              class="w-full bg-purple-500 hover:bg-purple-600 text-white py-3 rounded-lg font-semibold transition-colors"
+            >
+              Submit Registration
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- SCRIPT -->
+  <script>
+
+    const categoriesBtn =
+      document.getElementById('categoriesBtn');
+
+    const categoriesDropdown =
+      document.getElementById('categoriesDropdown');
+
+    categoriesBtn.addEventListener('click', () => {
+      categoriesDropdown.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', (e) => {
+
+      if (
+        !categoriesBtn.contains(e.target) &&
+        !categoriesDropdown.contains(e.target)
+      ) {
+        categoriesDropdown.classList.add('hidden');
+      }
+
+    });
+
+    document.querySelectorAll('.category-link')
+      .forEach(link => {
+
+        link.addEventListener('click', (e) => {
+
+          e.preventDefault();
+
+          const targetId =
+            link.getAttribute('href').substring(1);
+
+          const targetElement =
+            document.getElementById(targetId);
+
+          if (targetElement) {
+
+            targetElement.scrollIntoView({
+              behavior: 'smooth'
+            });
+
+            categoriesDropdown.classList.add('hidden');
+          }
+
+        });
+
+      });
+
+    function openRegistration(eventName) {
+
+      document.getElementById('eventTitle')
+        .textContent =
+        `Registering for: ${eventName}`;
+
+      document.getElementById('registrationModal')
+        .classList.remove('hidden');
+
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeRegistration() {
+
+      document.getElementById('registrationModal')
+        .classList.add('hidden');
+
+      document.body.style.overflow = 'auto';
+    }
+
+    document.getElementById('registrationModal')
+      .addEventListener('click', (e) => {
+
+        if (e.target.id === 'registrationModal') {
+          closeRegistration();
+        }
+
+      });
+
+  </script>
+
+</body>
+</html>
