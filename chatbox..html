@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduAI Pro</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Poppins', sans-serif; }
+    .glow-purple { box-shadow: 0 0 20px rgba(108, 77, 255, 0.3); }
+    .glow-purple-sm { box-shadow: 0 0 10px rgba(108, 77, 255, 0.2); }
+    .glass { background: rgba(255,255,255,0.8); backdrop-filter: blur(12px); }
+    .ai-bubble { background: linear-gradient(135deg, #6C4DFF 0%, #8B5CF6 100%); box-shadow: 0 0 25px rgba(108, 77, 255, 0.4); }
+    .teacher-bubble { background: linear-gradient(135deg, #6C4DFF, #8B5CF6); }
+    @keyframes pulse-glow { 0%,100% { box-shadow: 0 0 10px rgba(108,77,255,0.3); } 50% { box-shadow: 0 0 25px rgba(108,77,255,0.6); } }
+    .ai-pulse { animation: pulse-glow 2s infinite; }
+    @keyframes typing { 0%,60%,100% { opacity: 0.3; } 30% { opacity: 1; } }
+    .dot1 { animation: typing 1.4s infinite; }
+    .dot2 { animation: typing 1.4s infinite 0.2s; }
+    .dot3 { animation: typing 1.4s infinite 0.4s; }
+    .sidebar-item:hover { background: rgba(108,77,255,0.08); }
+    .sidebar-item.active { background: rgba(108,77,255,0.12); border-right: 3px solid #6C4DFF; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: #C4B5FD; border-radius: 4px; }
+  </style>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#6C4DFF',
+            secondary: '#8B5CF6',
+            lavender: '#C4B5FD',
+            surface: '#F8F6FF'
+          }
+        }
+      }
+    }
+  </script>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full bg-white">
+  <div id="app" class="h-full flex overflow-hidden"><!-- Left Sidebar -->
+   <aside class="w-72 bg-white border-r border-gray-100 flex flex-col h-full shrink-0 flex">
+    <div class="p-5 border-b border-gray-100">
+     <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center glow-purple-sm"><i data-lucide="brain" class="w-5 h-5 text-white"></i>
+      </div>
+      <div>
+       <h1 id="platform-title" class="font-bold text-gray-900 text-lg">Campus Hub</h1>
+       <p class="text-xs text-gray-400">AI-Powered Learning</p>
+      </div>
+     </div>
+    </div><!-- Teacher Profile -->
+    <div class="p-4 border-b border-gray-100">
+     <div class="flex items-center gap-3">
+      <div class="relative">
+       <div class="w-11 h-11 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-semibold text-sm">
+        MS
+       </div>
+       <div class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-400 border-2 border-white rounded-full"></div>
+      </div>
+      <div>
+       <p class="font-semibold text-sm text-gray-800">Ms. Sarah Chen</p>
+       <p class="text-xs text-green-500">Online</p>
+      </div>
+     </div>
+    </div><!-- Nav -->
+    <nav class="flex-1 overflow-y-auto py-3 px-2">
+     <p class="px-3 text-[10px] uppercase tracking-widest text-gray-400 font-semibold mb-2">Menu</p>
+     <div class="space-y-0.5"><a class="sidebar-item active flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-primary font-medium cursor-pointer"><i data-lucide="message-circle" class="w-4 h-4"></i>Messages<span class="ml-auto bg-primary text-white text-[10px] px-1.5 py-0.5 rounded-full">5</span></a> <a class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-600 cursor-pointer"><i data-lucide="bot" class="w-4 h-4"></i>AI Assistant</a>
+     </div>
+     <p class="px-3 text-[10px] uppercase tracking-widest text-gray-400 font-semibold mb-2 mt-5">Recent Chats</p>
+     <div class="space-y-1" id="chat-list">
+      <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-primary/10 cursor-pointer">
+       <div class="relative">
+        <div class="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 text-xs font-semibold">
+         AK
+        </div>
+        <div class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-400 border-2 border-white rounded-full"></div>
+       </div>
+       <div class="flex-1 min-w-0">
+        <p class="text-sm font-medium text-gray-800 truncate">Arjun Kumar</p>
+        <p class="text-[11px] text-gray-400 truncate">Can you explain derivatives?</p>
+       </div>
+       <div class="flex flex-col items-end gap-1">
+        <span class="text-[10px] text-gray-400">2m</span><span class="w-4 h-4 bg-primary text-white text-[9px] rounded-full flex items-center justify-center">2</span>
+       </div>
+      </div>
+      <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 cursor-pointer">
+       <div class="relative">
+        <div class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xs font-semibold">
+         PS
+        </div>
+        <div class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-gray-300 border-2 border-white rounded-full"></div>
+       </div>
+       <div class="flex-1 min-w-0">
+        <p class="text-sm font-medium text-gray-800 truncate">Priya Sharma</p>
+        <p class="text-[11px] text-gray-400 truncate">Thank you ma'am!</p>
+       </div><span class="text-[10px] text-gray-400">1h</span>
+      </div>
+      <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 cursor-pointer">
+       <div class="relative">
+        <div class="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-xs font-semibold">
+         RJ
+        </div>
+        <div class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-400 border-2 border-white rounded-full"></div>
+       </div>
+       <div class="flex-1 min-w-0">
+        <p class="text-sm font-medium text-gray-800 truncate">Rahul Joshi</p>
+        <p class="text-[11px] text-gray-400 truncate">Assignment submitted</p>
+       </div><span class="text-[10px] text-gray-400">3h</span>
+      </div>
+      <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 cursor-pointer">
+       <div class="relative">
+        <div class="w-9 h-9 rounded-full bg-pink-100 flex items-center justify-center text-pink-600 text-xs font-semibold">
+         NM
+        </div>
+        <div class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-400 border-2 border-white rounded-full"></div>
+       </div>
+       <div class="flex-1 min-w-0">
+        <p class="text-sm font-medium text-gray-800 truncate">Neha Malik</p>
+        <p class="text-[11px] text-gray-400 truncate">What's the project deadline?</p>
+       </div><span class="text-[10px] text-gray-400">4h</span>
+      </div>
+      <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 cursor-pointer">
+       <div class="relative">
+        <div class="w-9 h-9 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 text-xs font-semibold">
+         VK
+        </div>
+        <div class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-gray-300 border-2 border-white rounded-full"></div>
+       </div>
+       <div class="flex-1 min-w-0">
+        <p class="text-sm font-medium text-gray-800 truncate">Vikram Kumar</p>
+        <p class="text-[11px] text-gray-400 truncate">Need help with physics</p>
+       </div><span class="text-[10px] text-gray-400">5h</span>
+      </div>
+      <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 cursor-pointer">
+       <div class="relative">
+        <div class="w-9 h-9 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-xs font-semibold">
+         AD
+        </div>
+        <div class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-400 border-2 border-white rounded-full"></div>
+       </div>
+       <div class="flex-1 min-w-0">
+        <p class="text-sm font-medium text-gray-800 truncate">Avni Desai</p>
+        <p class="text-[11px] text-gray-400 truncate">Thanks for the explanation!</p>
+       </div><span class="text-[10px] text-gray-400">6h</span>
+      </div>
+     </div>
+    </nav>
+   </aside><!-- Main Chat Area -->
+   <main class="flex-1 flex flex-col h-full min-w-0"><!-- Chat Header -->
+    <header class="px-6 py-4 border-b border-gray-100 bg-white flex items-center justify-between shrink-0">
+     <div class="flex items-center gap-3">
+      <div class="relative">
+       <div class="w-11 h-11 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-semibold text-sm">
+        AK
+       </div>
+       <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 border-2 border-white rounded-full"></div>
+      </div>
+      <div>
+       <h2 class="font-semibold text-gray-900">Arjun Kumar</h2>
+       <p class="text-xs text-gray-400">Class 12-A • Online</p>
+      </div>
+      <div id="status-badge" class="ml-4 px-3 py-1 rounded-full bg-green-50 border border-green-200 text-[11px] font-medium text-green-600 flex items-center gap-1.5">
+       <div class="w-1.5 h-1.5 rounded-full bg-green-400"></div>Teacher Active
+      </div>
+     </div>
+     <div class="flex items-center gap-2"><button class="w-9 h-9 rounded-xl hover:bg-gray-100 flex items-center justify-center transition"><i data-lucide="phone" class="w-4 h-4 text-gray-500"></i></button> <button class="w-9 h-9 rounded-xl hover:bg-gray-100 flex items-center justify-center transition"><i data-lucide="video" class="w-4 h-4 text-gray-500"></i></button> <button class="w-9 h-9 rounded-xl hover:bg-gray-100 flex items-center justify-center transition"><i data-lucide="bell" class="w-4 h-4 text-gray-500"></i></button>
+     </div>
+    </header><!-- AI Banner -->
+    <div id="ai-banner" class="hidden px-6 py-2.5 bg-gradient-to-r from-primary/5 to-secondary/5 border-b border-lavender/30 flex items-center gap-2">
+     <div class="w-5 h-5 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center ai-pulse">
+      <i data-lucide="bot" class="w-3 h-3 text-white"></i>
+     </div><span class="text-xs font-medium text-primary" id="ai-assistant-label">Teacher Offline → AI Academic Assistant Responding</span>
+    </div><!-- Messages -->
+    <div id="messages" class="flex-1 overflow-y-auto px-6 py-5 space-y-4 bg-surface"><!-- Student message -->
+     <div class="flex gap-3 max-w-[75%]">
+      <div class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 text-[10px] font-semibold shrink-0 mt-1">
+       AK
+      </div>
+      <div>
+       <div class="bg-white rounded-2xl rounded-tl-sm px-4 py-3 border border-lavender/30 shadow-sm">
+        <p class="text-sm text-gray-700">Hi Ma'am! Can you explain the concept of derivatives in calculus? I'm confused about the chain rule.</p>
+       </div>
+       <p class="text-[10px] text-gray-400 mt-1 ml-1">10:32 AM</p>
+      </div>
+     </div><!-- Teacher message -->
+     <div class="flex gap-3 max-w-[75%] ml-auto flex-row-reverse">
+      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-[10px] font-semibold shrink-0 mt-1">
+       MS
+      </div>
+      <div>
+       <div class="teacher-bubble rounded-2xl rounded-tr-sm px-4 py-3 shadow-md">
+        <p class="text-sm text-white">Great question, Arjun! The chain rule is used when you have a composite function. Think of it as peeling layers — differentiate the outer function first, then multiply by the derivative of the inner function.</p>
+       </div>
+       <p class="text-[10px] text-gray-400 mt-1 mr-1 text-right">10:34 AM • Read ✓✓</p>
+      </div>
+     </div><!-- Student -->
+     <div class="flex gap-3 max-w-[75%]">
+      <div class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 text-[10px] font-semibold shrink-0 mt-1">
+       AK
+      </div>
+      <div>
+       <div class="bg-white rounded-2xl rounded-tl-sm px-4 py-3 border border-lavender/30 shadow-sm">
+        <p class="text-sm text-gray-700">Can you give me an example? Like f(x) = (3x + 1)²?</p>
+       </div>
+       <p class="text-[10px] text-gray-400 mt-1 ml-1">10:35 AM</p>
+      </div>
+     </div><!-- AI Message -->
+     <div class="flex gap-3 max-w-[80%]">
+      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center shrink-0 mt-1 ai-pulse">
+       <i data-lucide="bot" class="w-4 h-4 text-white"></i>
+      </div>
+      <div>
+       <div class="flex items-center gap-2 mb-1"><span class="text-[10px] font-semibold text-primary" id="ai-msg-label">AI Academic Assistant</span> <span class="text-[9px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium">98% confidence</span>
+       </div>
+       <div class="ai-bubble rounded-2xl rounded-tl-sm px-4 py-3">
+        <p class="text-sm text-white">For f(x) = (3x + 1)², using the chain rule:</p>
+        <p class="text-sm text-white/90 mt-1">1. Outer: u² → 2u</p>
+        <p class="text-sm text-white/90">2. Inner: 3x+1 → 3</p>
+        <p class="text-sm text-white mt-1 font-medium">f'(x) = 2(3x+1) · 3 = 6(3x+1)</p>
+       </div>
+       <p class="text-[10px] text-gray-400 mt-1 ml-1">10:36 AM • AI Response</p>
+      </div>
+     </div><!-- Typing indicator -->
+     <div id="typing-indicator" class="hidden flex gap-3 max-w-[75%]">
+      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center shrink-0 ai-pulse">
+       <i data-lucide="bot" class="w-4 h-4 text-white"></i>
+      </div>
+      <div class="bg-white rounded-2xl px-4 py-3 border border-lavender/30 shadow-sm flex items-center gap-1">
+       <div class="w-2 h-2 rounded-full bg-primary dot1"></div>
+       <div class="w-2 h-2 rounded-full bg-primary dot2"></div>
+       <div class="w-2 h-2 rounded-full bg-primary dot3"></div>
+      </div>
+     </div>
+    </div><!-- Quick Prompts -->
+    <div class="px-6 py-2 bg-white border-t border-gray-100 flex gap-2 overflow-x-auto shrink-0"><button onclick="sendQuickPrompt(this.textContent)" class="px-3 py-1.5 rounded-full bg-primary/5 border border-primary/20 text-xs text-primary font-medium whitespace-nowrap hover:bg-primary/10 transition">Explain Topic</button> <button onclick="sendQuickPrompt(this.textContent)" class="px-3 py-1.5 rounded-full bg-primary/5 border border-primary/20 text-xs text-primary font-medium whitespace-nowrap hover:bg-primary/10 transition">Generate Notes</button> <button onclick="sendQuickPrompt(this.textContent)" class="px-3 py-1.5 rounded-full bg-primary/5 border border-primary/20 text-xs text-primary font-medium whitespace-nowrap hover:bg-primary/10 transition">Show Assignment</button> <button onclick="sendQuickPrompt(this.textContent)" class="px-3 py-1.5 rounded-full bg-primary/5 border border-primary/20 text-xs text-primary font-medium whitespace-nowrap hover:bg-primary/10 transition">Exam Schedule</button> <button onclick="sendQuickPrompt(this.textContent)" class="px-3 py-1.5 rounded-full bg-primary/5 border border-primary/20 text-xs text-primary font-medium whitespace-nowrap hover:bg-primary/10 transition">Practice Questions</button>
+    </div><!-- Input -->
+    <div class="px-6 py-4 bg-white border-t border-gray-100 shrink-0">
+     <form id="msg-form" class="flex items-center gap-3"><button type="button" class="w-9 h-9 rounded-xl hover:bg-gray-100 flex items-center justify-center transition"><i data-lucide="paperclip" class="w-4 h-4 text-gray-400"></i></button>
+      <div class="flex-1 relative"><input id="msg-input" type="text" placeholder="Type your message..." class="w-full px-4 py-3 rounded-2xl bg-surface border border-lavender/30 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition">
+      </div><button type="button" class="w-9 h-9 rounded-xl hover:bg-gray-100 flex items-center justify-center transition"><i data-lucide="smile" class="w-4 h-4 text-gray-400"></i></button> <button type="submit" class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center glow-purple-sm hover:scale-105 transition-transform"><i data-lucide="send" class="w-4 h-4 text-white"></i></button>
+     </form>
+    </div>
+   </main>
+  </div>
+  <script>
+  const defaultConfig = {
+    platform_title: 'Campus Hub',
+    ai_assistant_name: 'AI Academic Assistant',
+    background_color: '#F8F6FF',
+    surface_color: '#FFFFFF',
+    text_color: '#1F2937',
+    primary_action: '#6C4DFF',
+    secondary_action: '#8B5CF6'
+  };
+
+  // Teacher profiles with different response styles
+  const teachers = [
+    {
+      name: 'Ms. Sarah Chen',
+      initials: 'MS',
+      color: 'from-primary to-secondary',
+      style: 'detailed',
+      responses: {
+        'Explain Topic': "Great question! The chain rule is fundamental. When you have f(g(x)), you differentiate the outer function and multiply by the derivative of the inner. Let me give you a real example: if f(x) = sin(x²), then f'(x) = cos(x²) · 2x. Practice this pattern!",
+        'Generate Notes': "📝 Complete Notes on Derivatives:\n\n1. BASIC DEFINITION:\n   f'(x) = lim(h→0) [f(x+h) - f(x)]/h\n\n2. POWER RULE: d/dx[x^n] = nx^(n-1)\n\n3. CHAIN RULE: d/dx[f(g(x))] = f'(g(x)) · g'(x)\n\n4. PRODUCT RULE: d/dx[fg] = f'g + fg'\n\n5. QUOTIENT RULE: d/dx[f/g] = (f'g - fg')/g²",
+        'Show Assignment': "Your Assignment #7 Details:\n• Q1-3: Basic power rule (submit by Dec 15)\n• Q4-6: Chain rule applications (must show work)\n• Q7-8: Mixed problems\n• Q9-10: Challenge problems (bonus points)\n\nYou're doing well! Keep up the practice.",
+        'Exam Schedule': "📅 EXAM SCHEDULE:\n\n• Unit Test 4 (Calculus): Dec 20, 2:00 PM\n• Coverage: Ch 5-7\n• Duration: 1.5 hours\n• Mid-Term: Jan 10\n• Practice mock test available on platform",
+        'Practice Questions': "Here are important practice problems:\n\n1. d/dx[sin(3x²)] = ?\n2. d/dx[(2x+1)⁵] = ?\n3. d/dx[e^(x²+1)] = ?\n4. d/dx[ln(4x-3)] = ?\n5. d/dx[√(x³+2x)] = ?\n\nTry solving these and show me your work!"
+      }
+    },
+    {
+      name: 'Mr. Rajesh Kumar',
+      initials: 'RK',
+      color: 'from-blue-500 to-blue-600',
+      style: 'concise',
+      responses: {
+        'Explain Topic': "Chain rule: Differentiate outer → multiply by inner derivative. Example: f(x) = (3x+1)² → f'(x) = 2(3x+1)·3 = 6(3x+1). Simple! Any more questions?",
+        'Generate Notes': "CALCULUS QUICK REFERENCE:\n• Chain Rule: dy/dx = dy/du · du/dx\n• d/dx[sin(u)] = cos(u)·du/dx\n• d/dx[e^u] = e^u·du/dx\n• d/dx[ln(u)] = (1/u)·du/dx\n\nRemember: Always identify outer and inner functions!",
+        'Show Assignment': "Assignment #7:\n- Due: Friday\n- 10 problems total\n- Focus on chain rule\n- Show all steps",
+        'Exam Schedule': "Test date: Dec 20\nCover chapters 5-7\nBring calculator",
+        'Practice Questions': "1. d/dx[sin(3x²)]\n2. d/dx[(2x+1)⁵]\n3. d/dx[e^(x²+1)]\n4. d/dx[ln(4x-3)]\n5. d/dx[√(x³+2x)]\n\nDo these now!"
+      }
+    },
+    {
+      name: 'Dr. Priya Verma',
+      initials: 'PV',
+      color: 'from-emerald-500 to-emerald-600',
+      style: 'encouraging',
+      responses: {
+        'Explain Topic': "Excellent question, Arjun! I'm so glad you're asking about this. The chain rule is like peeling an onion - work from outside to inside. It takes practice, but you'll master it. Let's break it down step by step with your example (3x+1)². I believe in you!",
+        'Generate Notes': "🌟 COMPREHENSIVE DERIVATIVES GUIDE\n\nDear students, mastering these concepts will open new mathematical horizons:\n\n✓ Chain Rule: df/dx = df/du × du/dx\n✓ Know your inner and outer functions\n✓ Practice consistently\n✓ Never skip steps\n\nYou're capable of understanding this! Trust the process.",
+        'Show Assignment': "Dear Arjun,\n\nYour Assignment #7 is ready! I've carefully curated these 10 problems to help you strengthen your chain rule mastery. \n\nDue: Friday (Dec 15)\nExpected time: 1-2 hours\n\nI'm here if you need clarification!",
+        'Exam Schedule': "🎯 IMPORTANT EXAM INFO:\n\nUnit Test 4 - Calculus Mastery\nDate: December 20, 2:00 PM\nDuration: 1.5 hours\n\nYou all have studied hard! Show what you know. I'm confident in your abilities!",
+        'Practice Questions': "Let's practice these! Each one strengthens a different skill:\n\n1. d/dx[sin(3x²)] ← trig + power\n2. d/dx[(2x+1)⁵] ← power combo\n3. d/dx[e^(x²+1)] ← exponential\n4. d/dx[ln(4x-3)] ← logarithm\n5. d/dx[√(x³+2x)] ← root function\n\nI'm proud of your effort!"
+      }
+    },
+    {
+      name: 'Prof. Vikram Singh',
+      initials: 'VS',
+      color: 'from-amber-500 to-amber-600',
+      style: 'academic',
+      responses: {
+        'Explain Topic': "The chain rule, formally: if y = f(u) and u = g(x), then dy/dx = (dy/du)(du/dx). This is the composition rule for derivatives. In your case, f(x) = (3x+1)², we have u = 3x+1, so f'(x) = 2u·3 = 6(3x+1). Fundamental concept in calculus.",
+        'Generate Notes': "MATHEMATICAL THEORY - DERIVATIVES:\n\n[1] DEFINITION: f'(x) := lim(h→0) Δf/Δx\n\n[2] RULES:\n   • Power: d/dx[x^n] = nx^(n-1)\n   • Chain: d/dx[f(g(x))] = f'(g(x))g'(x)\n   • Product: d/dx[fg] = f'g + fg'\n\n[3] APPLICATIONS: Optimization, Rate of Change, Motion Analysis\n\nRefer to textbook Chapter 5 for detailed proofs.",
+        'Show Assignment': "ASSIGNMENT #7 - DIFFERENTIATION\n\nComponent Analysis:\n• Problems 1-4: Foundational (40%)\n• Problems 5-7: Intermediate (40%)\n• Problems 8-10: Advanced (20%)\n\nSubmission: Friday, 11:59 PM\nFormat: Clear, organized work with proper notation",
+        'Exam Schedule': "UNIT TEST 4 - CALCULUS FOUNDATIONS\n\nSchedule: December 20, 14:00-15:30 (IST)\nTopics: Chapters 5-7\nWeighting: Derivatives 50%, Applications 50%\nResources: Approved calculator only",
+        'Practice Questions': "PROBLEM SET FOR MASTERY:\n\nCalculate derivatives (show work):\n1. f(x) = sin(3x²)\n2. g(x) = (2x+1)⁵\n3. h(x) = e^(x²+1)\n4. p(x) = ln(4x-3)\n5. q(x) = √(x³+2x)\n\nDue before exam for evaluation."
+      }
+    }
+  ];
+
+  let teacherOnline = true;
+  let currentTeacher = 0;
+
+  const aiResponses = {
+    'Explain Topic': "The chain rule states: if y = f(g(x)), then dy/dx = f'(g(x)) · g'(x). Think of it as differentiating from the outside in!",
+    'Generate Notes': "📝 Chain Rule Notes:\n• Used for composite functions\n• Differentiate outer function first\n• Multiply by derivative of inner function\n• Practice with nested polynomials, trig, and exponentials",
+    'Show Assignment': "📋 Assignment #7: Differentiation\nDue: Friday, Dec 15\n• Q1-5: Basic derivatives\n• Q6-8: Chain rule problems\n• Q9-10: Application problems",
+    'Exam Schedule': "📅 Upcoming Exams:\n• Unit Test 4 (Calculus): Dec 20\n• Mid-Term: Jan 10\n• Practice Test available in resources",
+    'Practice Questions': "✏️ Try these:\n1. d/dx [sin(3x²)]\n2. d/dx [(2x+1)⁵]\n3. d/dx [e^(x²+1)]\n4. d/dx [ln(4x-3)]"
+  };
+
+  function sendQuickPrompt(text) {
+    addMessage(text, 'student');
+    setTimeout(() => showTyping(), 500);
+    setTimeout(() => {
+      hideTyping();
+      if (teacherOnline) {
+        const response = teachers[currentTeacher].responses[text];
+        addMessage(response, 'teacher', teachers[currentTeacher]);
+      } else {
+        const response = aiResponses[text] || "I'd be happy to help with that! Let me find the relevant information for you.";
+        addMessage(response, 'ai');
+      }
+    }, 2000);
+  }
+
+  function addMessage(text, type, teacher = null) {
+    const container = document.getElementById('messages');
+    const typing = document.getElementById('typing-indicator');
+    const div = document.createElement('div');
+    const time = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+
+    if (type === 'student') {
+      div.className = 'flex gap-3 max-w-[75%]';
+      div.innerHTML = `<div class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 text-[10px] font-semibold shrink-0 mt-1">AK</div><div><div class="bg-white rounded-2xl rounded-tl-sm px-4 py-3 border border-lavender/30 shadow-sm"><p class="text-sm text-gray-700">${text}</p></div><p class="text-[10px] text-gray-400 mt-1 ml-1">${time}</p></div>`;
+    } else if (type === 'teacher') {
+      div.className = 'flex gap-3 max-w-[75%] ml-auto flex-row-reverse';
+      const teacherColor = teacher ? teacher.color : 'from-primary to-secondary';
+      const teacherInitials = teacher ? teacher.initials : 'MS';
+      div.innerHTML = `<div class="w-8 h-8 rounded-full bg-gradient-to-br ${teacherColor} flex items-center justify-center text-white text-[10px] font-semibold shrink-0 mt-1">${teacherInitials}</div><div><div class="teacher-bubble rounded-2xl rounded-tr-sm px-4 py-3 shadow-md"><p class="text-sm text-white whitespace-pre-line">${text}</p></div><p class="text-[10px] text-gray-400 mt-1 mr-1 text-right">${time} • Read ✓✓</p></div>`;
+    } else {
+      div.className = 'flex gap-3 max-w-[80%]';
+      const aiName = (window.elementSdk && window.elementSdk.config.ai_assistant_name) || defaultConfig.ai_assistant_name;
+      div.innerHTML = `<div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center shrink-0 mt-1 ai-pulse"><i data-lucide="bot" class="w-4 h-4 text-white"></i></div><div><div class="flex items-center gap-2 mb-1"><span class="text-[10px] font-semibold text-primary">${aiName}</span><span class="text-[9px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium">95% confidence</span></div><div class="ai-bubble rounded-2xl rounded-tl-sm px-4 py-3"><p class="text-sm text-white whitespace-pre-line">${text}</p></div><p class="text-[10px] text-gray-400 mt-1 ml-1">${time} • AI Response</p></div>`;
+    }
+    container.insertBefore(div, typing);
+    container.scrollTop = container.scrollHeight;
+    lucide.createIcons();
+  }
+
+  function showTyping() { document.getElementById('typing-indicator').classList.remove('hidden'); document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight; }
+  function hideTyping() { document.getElementById('typing-indicator').classList.add('hidden'); }
+
+  function toggleTeacherStatus() {
+    teacherOnline = !teacherOnline;
+    currentTeacher = Math.floor(Math.random() * teachers.length);
+    const badge = document.getElementById('status-badge');
+    const banner = document.getElementById('ai-banner');
+    const teacher = teachers[currentTeacher];
+    
+    if (teacherOnline) {
+      badge.className = 'ml-4 px-3 py-1 rounded-full bg-green-50 border border-green-200 text-[11px] font-medium text-green-600 flex items-center gap-1.5';
+      badge.innerHTML = `<div class="w-1.5 h-1.5 rounded-full bg-green-400"></div>${teacher.name} Online`;
+      banner.classList.add('hidden');
+    } else {
+      badge.className = 'ml-4 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[11px] font-medium text-primary flex items-center gap-1.5';
+      badge.innerHTML = '<div class="w-1.5 h-1.5 rounded-full bg-primary ai-pulse"></div>AI Responding';
+      banner.classList.remove('hidden');
+      banner.classList.add('flex');
+    }
+  }
+
+  // Form handling
+  document.getElementById('msg-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const input = document.getElementById('msg-input');
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+
+    addMessage(text, 'student');
+    setTimeout(() => showTyping(), 500);
+    setTimeout(() => {
+      hideTyping();
+      if (teacherOnline) {
+        const teacher = teachers[currentTeacher];
+        // Generic responses if not a quick prompt
+        const genericResponses = [
+          "That's a great question! Let me help you with that.",
+          "I appreciate your curiosity! Here's what I think...",
+          "Excellent point! Let me explain this better.",
+          "Good question! This is an important concept.",
+          "I'm glad you asked! Let me clarify that for you."
+        ];
+        const response = genericResponses[Math.floor(Math.random() * genericResponses.length)];
+        addMessage(response, 'teacher', teacher);
+      } else {
+        const aiResponse = "I understand your question. Let me help you with that based on my AI knowledge base!";
+        addMessage(aiResponse, 'ai');
+      }
+    }, 1500);
+  });
+
+  // Toggle teacher status every 30s for demo
+  setTimeout(toggleTeacherStatus, 15000);
+
+  // Element SDK init
+  window.elementSdk.init({
+    defaultConfig,
+    onConfigChange: async (config) => {
+      const title = config.platform_title || defaultConfig.platform_title;
+      const aiName = config.ai_assistant_name || defaultConfig.ai_assistant_name;
+      document.getElementById('platform-title').textContent = title;
+      document.getElementById('ai-assistant-label').textContent = `Teacher Offline → ${aiName} Responding`;
+      const aiLabel = document.getElementById('ai-msg-label');
+      if (aiLabel) aiLabel.textContent = aiName;
+
+      // Colors
+      const bg = config.background_color || defaultConfig.background_color;
+      const surface = config.surface_color || defaultConfig.surface_color;
+      const text = config.text_color || defaultConfig.text_color;
+      const primary = config.primary_action || defaultConfig.primary_action;
+      const secondary = config.secondary_action || defaultConfig.secondary_action;
+      document.documentElement.style.setProperty('--bg', bg);
+      document.documentElement.style.setProperty('--primary', primary);
+    },
+    mapToCapabilities: (config) => ({
+      recolorables: [
+        { get: () => config.background_color || defaultConfig.background_color, set: (v) => { config.background_color = v; window.elementSdk.setConfig({ background_color: v }); } },
+        { get: () => config.surface_color || defaultConfig.surface_color, set: (v) => { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
+        { get: () => config.text_color || defaultConfig.text_color, set: (v) => { config.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
+        { get: () => config.primary_action || defaultConfig.primary_action, set: (v) => { config.primary_action = v; window.elementSdk.setConfig({ primary_action: v }); } },
+        { get: () => config.secondary_action || defaultConfig.secondary_action, set: (v) => { config.secondary_action = v; window.elementSdk.setConfig({ secondary_action: v }); } }
+      ],
+      borderables: [],
+      fontEditable: { get: () => config.font_family || 'Poppins', set: (v) => { config.font_family = v; window.elementSdk.setConfig({ font_family: v }); } },
+      fontSizeable: { get: () => config.font_size || 14, set: (v) => { config.font_size = v; window.elementSdk.setConfig({ font_size: v }); } }
+    }),
+    mapToEditPanelValues: (config) => new Map([
+      ['platform_title', config.platform_title || defaultConfig.platform_title],
+      ['ai_assistant_name', config.ai_assistant_name || defaultConfig.ai_assistant_name]
+    ])
+  });
+
+  lucide.createIcons();
+</script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9fd8e520b2021eed',t:'MTc3OTA4NjY4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
