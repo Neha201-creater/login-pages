@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal</title>
+    
+    <!-- SEO & Metadata -->
+    <meta name="description" content="Student Portal - Your gateway to learning and academic success.">
+    
+    <!-- Tailwind CSS & Google Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --primary: #8A2BE2;
+            --gradient-start: #A855F7;
+            --gradient-end: #6D28D9;
+            --bg-soft: #F5F2FA;
+            --text-dark: #111827;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-soft);
+            color: var(--text-dark);
+            transition: background-color 0.3s ease;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .dark .glass {
+            background: rgba(17, 24, 39, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .purple-gradient {
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 24px;
+            box-shadow: 0 10px 30px -5px rgba(138, 43, 226, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .dark .glass-card {
+            background: rgba(31, 41, 55, 0.9);
+        }
+
+        .loader {
+            border-top-color: var(--primary);
+            animation: spinner 1.5s linear infinite;
+        }
+        @keyframes spinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .shape {
+            position: fixed;
+            z-index: -1;
+            filter: blur(80px);
+            opacity: 0.3;
+        }
+
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+        }
+    </style>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#8A2BE2',
+                        secondary: '#A855F7',
+                        accent: '#6D28D9'
+                    },
+                    borderRadius: { '4xl': '2rem' }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
+
+    <!-- Background Decoration -->
+    <div class="shape w-96 h-96 bg-purple-300 rounded-full top-[-10%] left-[-10%]"></div>
+    <div class="shape w-80 h-80 bg-blue-300 rounded-full bottom-[-10%] right-[-10%]"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 z-[100] flex items-center justify-center bg-white dark:bg-slate-900 transition-opacity duration-500">
+        <div class="flex flex-col items-center">
+            <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-100 h-16 w-16 mb-4"></div>
+            <div class="flex items-center gap-2 text-primary font-bold text-2xl">
+                <i data-lucide="graduation-cap"></i> AR Student
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Section -->
+    <div id="auth-section" class="min-h-screen flex items-center justify-center px-4 hidden">
+        <div class="glass-card p-10 w-full max-w-md">
+            <div class="text-center mb-10">
+                <div class="w-16 h-16 purple-gradient rounded-2xl mx-auto flex items-center justify-center text-white mb-4 shadow-lg">
+                    <i data-lucide="user" class="w-8 h-8"></i>
+                </div>
+                <h1 class="text-3xl font-bold">Student Login</h1>
+                <p class="text-slate-500 dark:text-slate-400 mt-2">Join your classroom with CampusHub</p>
+            </div>
+
+            <div id="login-form">
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Email Address</label>
+                        <input type="email" id="login-email" class="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border" placeholder="student@arschool.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Password</label>
+                        <input type="password" id="login-password" class="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border" placeholder="••••••••">
+                    </div>
+                    <button onclick="handleLogin()" id="login-btn" class="w-full purple-gradient text-white py-4 rounded-2xl font-bold shadow-xl">Sign In</button>
+                    <p class="text-center text-sm text-slate-500">New here? <a href="#" onclick="toggleAuth(false)" class="text-primary font-bold">Create Account</a></p>
+                </div>
+            </div>
+
+            <div id="register-form" class="hidden">
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Full Name</label>
+                        <input type="text" id="reg-name" class="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border" placeholder="Your Name">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Email Address</label>
+                        <input type="email" id="reg-email" class="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border" placeholder="student@arschool.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Password</label>
+                        <input type="password" id="reg-password" class="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border" placeholder="••••••••">
+                    </div>
+                    <button onclick="handleRegister()" id="reg-btn" class="w-full purple-gradient text-white py-4 rounded-2xl font-bold shadow-xl">Register Now</button>
+                    <p class="text-center text-sm text-slate-500">Have an account? <a href="#" onclick="toggleAuth(true)" class="text-primary font-bold">Sign In</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content" class="hidden min-h-screen">
+        <nav class="fixed top-0 left-0 right-0 z-40 glass py-4 px-6 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 purple-gradient rounded-xl flex items-center justify-center text-white shadow-md">
+                    <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+                </div>
+                <span class="text-xl font-bold tracking-tight">AR Student</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800"><i data-lucide="moon" class="w-5 h-5"></i></button>
+                <button onclick="logout()" class="text-red-500 font-bold hover:bg-red-50 px-4 py-2 rounded-xl">Logout</button>
+            </div>
+        </nav>
+
+        <main class="pt-28 pb-20 px-4 md:px-8 max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
+                <div>
+                    <h2 class="text-3xl font-bold" id="student-name">Welcome!</h2>
+                    <p class="text-slate-500">Continue your learning journey today.</p>
+                </div>
+                <button onclick="openModal('join-class-modal')" class="px-8 py-4 purple-gradient text-white rounded-2xl font-bold shadow-lg hover:scale-105 transition">
+                    <i data-lucide="plus" class="inline w-5 h-5 mr-1"></i> Join Class
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Enrolled Classes -->
+                <div class="lg:col-span-2 space-y-6">
+                    <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="book" class="text-primary"></i> My Classes</h3>
+                    <div id="enrolled-classes-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Dynamic Classes -->
+                    </div>
+                </div>
+
+                <!-- Upcoming Deadlines -->
+                <div class="space-y-6">
+                    <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="clock" class="text-primary"></i> Upcoming Deadlines</h3>
+                    <div id="deadlines-list" class="space-y-4">
+                        <!-- Dynamic Assignments -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Join Class Modal -->
+    <div id="join-class-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
+        <div class="glass-card w-full max-w-sm p-8 scale-95 opacity-0 transition-all duration-300" id="join-modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold">Join a Class</h3>
+                <button onclick="closeModal('join-class-modal')"><i data-lucide="x"></i></button>
+            </div>
+            <p class="text-slate-500 mb-6 text-sm">Ask your teacher for the 6-character Join Code.</p>
+            <div class="space-y-4">
+                <input type="text" id="join-code" maxlength="6" class="w-full text-center text-2xl font-mono tracking-widest uppercase py-4 rounded-2xl border-2 border-primary bg-purple-50" placeholder="XXXXXX">
+                <button onclick="handleJoinClass()" id="join-btn" class="w-full purple-gradient text-white py-4 rounded-2xl font-bold shadow-lg">Confirm & Join</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit Work Modal -->
+    <div id="submit-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
+        <div class="glass-card w-full max-w-md p-8" id="submit-modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold">Submit Assignment</h3>
+                <button onclick="closeModal('submit-modal')"><i data-lucide="x"></i></button>
+            </div>
+            <div class="space-y-4">
+                <input type="hidden" id="target-assignment-id">
+                <div class="p-4 bg-slate-50 rounded-xl border border-dashed border-primary">
+                    <input type="file" id="submit-file" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-primary file:text-white">
+                </div>
+                <button onclick="handleSubmitWork()" id="submit-btn" class="w-full purple-gradient text-white py-4 rounded-2xl font-bold">Upload Submission</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, getDocs, collection, query, where, onSnapshot, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig, "ARStudentApp");
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+
+        // Auth & Profile Fetch with Retry
+        onAuthStateChanged(auth, async (user) => {
+            const overlay = document.getElementById('loading-overlay');
+            if (user) {
+                try {
+                    currentUser = await fetchProfileWithRetry(user.uid);
+                    document.getElementById('student-name').textContent = `Hi, ${currentUser.name.split(' ')[0]} 👋`;
+                    document.getElementById('auth-section').classList.add('hidden');
+                    document.getElementById('main-content').classList.remove('hidden');
+                    loadDashboard();
+                } catch (err) {
+                    Swal.fire('Access Denied', err.message, 'error');
+                    await signOut(auth);
+                }
+            } else {
+                document.getElementById('auth-section').classList.remove('hidden');
+                document.getElementById('main-content').classList.add('hidden');
+            }
+            lucide.createIcons();
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.classList.add('hidden'), 500);
+        });
+
+        async function fetchProfileWithRetry(uid, attempts = 10) {
+            for (let i = 0; i < attempts; i++) {
+                const snap = await getDoc(doc(db, "users", uid));
+                if (snap.exists()) return snap.data();
+                await new Promise(r => setTimeout(r, 500));
+            }
+            throw new Error("Student profile not found. Please try logging in again.");
+        }
+
+        window.handleLogin = async () => {
+            const e = document.getElementById('login-email').value;
+            const p = document.getElementById('login-password').value;
+            try {
+                await signInWithEmailAndPassword(auth, e, p);
+            } catch (err) { toast(err.message, 'error'); }
+        };
+
+        window.handleRegister = async () => {
+            const n = document.getElementById('reg-name').value;
+            const e = document.getElementById('reg-email').value;
+            const p = document.getElementById('reg-password').value;
+            
+            const settings = await getDoc(doc(db, "settings", "registration"));
+            if (settings.exists() && !settings.data().allowStudentReg) return toast('Registration is disabled', 'error');
+
+            try {
+                const cred = await createUserWithEmailAndPassword(auth, e, p);
+                await setDoc(doc(db, "users", cred.user.uid), {
+                    uid: cred.user.uid, name: n, email: e, role: 'student', createdAt: new Date().toISOString()
+                });
+                toast('Welcome!', 'success');
+            } catch (err) { toast(err.message, 'error'); }
+        };
+
+        window.logout = () => signOut(auth);
+
+        // Dashboard & Classes
+        async function loadDashboard() {
+            // Fetch Enrollments
+            const q = query(collection(db, "enrollments"), where("studentId", "==", currentUser.uid));
+            onSnapshot(q, async (snap) => {
+                const grid = document.getElementById('enrolled-classes-grid');
+                grid.innerHTML = snap.empty ? `<p class='text-slate-400'>No classes joined yet.</p>` : '';
+                
+                const classIds = snap.docs.map(d => d.data().classId);
+                for (const cid of classIds) {
+                    const cDoc = await getDoc(doc(db, "classes", cid));
+                    if (cDoc.exists()) {
+                        const data = cDoc.data();
+                        grid.innerHTML += `
+                            <div class="glass-card overflow-hidden group">
+                                <img src="${data.bannerUrl}" class="w-full h-24 object-cover">
+                                <div class="p-4">
+                                    <h4 class="font-bold">${data.name}</h4>
+                                    <p class="text-xs text-slate-500">${data.subject}</p>
+                                    <p class="text-[10px] mt-2 text-primary font-bold">BY ${data.teacherName}</p>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+                loadUpcomingAssignments(classIds);
+            });
+        }
+
+        async function loadUpcomingAssignments(classIds) {
+            const list = document.getElementById('deadlines-list');
+            list.innerHTML = '';
+            if (!classIds.length) return;
+
+            const q = query(collection(db, "assignments"), where("classId", "in", classIds));
+            const snap = await getDocs(q);
+            snap.forEach(docSnap => {
+                const data = docSnap.data();
+                list.innerHTML += `
+                    <div class="glass-card p-4 flex items-center justify-between">
+                        <div>
+                            <h5 class="font-bold text-sm">${data.title}</h5>
+                            <p class="text-[10px] text-red-500">Due: ${new Date(data.dueDate).toLocaleDateString()}</p>
+                        </div>
+                        <button onclick="openSubmitModal('${docSnap.id}')" class="text-xs font-bold text-primary hover:underline">SUBMIT</button>
+                    </div>
+                `;
+            });
+        }
+
+        window.handleJoinClass = async () => {
+            const code = document.getElementById('join-code').value.toUpperCase();
+            if (!code) return;
+
+            const q = query(collection(db, "classes"), where("joinCode", "==", code));
+            const snap = await getDocs(q);
+            if (snap.empty) return toast('Invalid Join Code', 'error');
+
+            const classId = snap.docs[0].id;
+            await addDoc(collection(db, "enrollments"), { studentId: currentUser.uid, classId });
+            closeModal('join-class-modal');
+            toast('Successfully joined class!', 'success');
+        };
+
+        window.handleSubmitWork = async () => {
+            const aid = document.getElementById('target-assignment-id').value;
+            const file = document.getElementById('submit-file').files[0];
+            if (!file) return;
+
+            showBtnLoading('submit-btn', true);
+            try {
+                const url = await uploadToCloudinary(file);
+                await addDoc(collection(db, "submissions"), {
+                    assignmentId: aid, studentId: currentUser.uid, fileURL: url, timestamp: serverTimestamp()
+                });
+                closeModal('submit-modal');
+                toast('Work submitted successfully!', 'success');
+            } catch (err) { toast(err.message, 'error'); }
+            finally { showBtnLoading('submit-btn', false); }
+        };
+
+        // Helpers
+        window.openSubmitModal = (id) => {
+            document.getElementById('target-assignment-id').value = id;
+            openModal('submit-modal');
+        };
+
+        window.openModal = (id) => {
+            document.getElementById(id).classList.remove('hidden');
+            setTimeout(() => {
+                const c = document.getElementById(id).querySelector('.glass-card');
+                c.classList.remove('scale-95', 'opacity-0');
+            }, 10);
+        };
+
+        window.closeModal = (id) => {
+            const c = document.getElementById(id).querySelector('.glass-card');
+            c.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => document.getElementById(id).classList.add('hidden'), 200);
+        };
+
+        window.toggleAuth = (login) => {
+            document.getElementById('login-form').classList.toggle('hidden', !login);
+            document.getElementById('register-form').classList.toggle('hidden', login);
+        };
+
+        window.toggleDarkMode = () => document.documentElement.classList.toggle('dark');
+
+        async function uploadToCloudinary(file) {
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("upload_preset", "ml_default");
+            const res = await fetch(`https://api.cloudinary.com/v1_1/dbfdguefj/auto/upload`, { method: "POST", body: formData });
+            const data = await res.json();
+            return data.secure_url;
+        }
+
+        function toast(msg, icon) { Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 }).fire({ icon, title: msg }); }
+        function showBtnLoading(id, l) {
+            const b = document.getElementById(id);
+            if (l) b.innerHTML = '<div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto"></div>';
+            else b.innerText = 'Upload Submission';
+        }
+    </script>
+</body>
+</html>

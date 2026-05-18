@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Teacher Portal</title>
+    
+    <!-- SEO & Metadata -->
+    <meta name="description" content=" Teacher Portal - Manage classes, assignments, and students effortlessly.">
+    
+    <!-- Tailwind CSS & Google Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --primary: #8A2BE2;
+            --gradient-start: #A855F7;
+            --gradient-end: #6D28D9;
+            --bg-soft: #F5F2FA;
+            --text-dark: #111827;
+            --text-light: #9CA3AF;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-soft);
+            color: var(--text-dark);
+            transition: background-color 0.3s ease;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .dark .glass {
+            background: rgba(17, 24, 39, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .purple-gradient {
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+        }
+
+        .soft-shadow {
+            box-shadow: 0 10px 30px -5px rgba(138, 43, 226, 0.1);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .dark .glass-card {
+            background: rgba(31, 41, 55, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Input styling */
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.1);
+        }
+
+        .loader {
+            border-top-color: var(--primary);
+            animation: spinner 1.5s linear infinite;
+        }
+        @keyframes spinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+        }
+
+        /* Abstract shapes */
+        .shape {
+            position: fixed;
+            z-index: -1;
+            filter: blur(80px);
+            opacity: 0.4;
+        }
+    </style>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#8A2BE2',
+                        secondary: '#A855F7',
+                        accent: '#6D28D9',
+                        bgSoft: '#F5F2FA'
+                    },
+                    borderRadius: {
+                        '3xl': '1.5rem',
+                        '4xl': '2rem',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
+
+    <!-- Abstract Background Shapes -->
+    <div class="shape w-96 h-96 bg-purple-300 rounded-full top-[-10%] left-[-10%]"></div>
+    <div class="shape w-80 h-80 bg-blue-300 rounded-full bottom-[-10%] right-[-10%]"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 z-[100] flex items-center justify-center bg-white dark:bg-slate-900 transition-opacity duration-500">
+        <div class="flex flex-col items-center">
+            <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-100 h-16 w-16 mb-4"></div>
+            <div class="flex items-center gap-2 text-primary font-bold text-2xl">
+                <i data-lucide="graduation-cap"></i> AR School
+            </div>
+        </div>
+    </div>
+
+    <!-- Authentication Section -->
+    <div id="auth-section" class="min-h-screen flex items-center justify-center px-4 hidden">
+        <div class="glass-card p-10 w-full max-w-md soft-shadow">
+            <div class="text-center mb-10">
+                <div class="w-16 h-16 purple-gradient rounded-2xl mx-auto flex items-center justify-center text-white mb-4 shadow-lg">
+                    <i data-lucide="book-open" class="w-8 h-8"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-slate-900 dark:text-white">Teacher Portal</h1>
+                <p class="text-slate-500 dark:text-slate-400 mt-2">Empowering education with CampusHub</p>
+            </div>
+
+            <!-- Login Form -->
+            <div id="login-form">
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Email Address</label>
+                        <input type="email" id="login-email" class="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 transition" placeholder="teacher@arschool.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Password</label>
+                        <input type="password" id="login-password" class="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 transition" placeholder="••••••••">
+                    </div>
+                    <button onclick="handleLogin()" class="w-full purple-gradient text-white py-4 rounded-2xl font-bold shadow-xl hover:opacity-95 transition transform active:scale-[0.98]">Sign In</button>
+                    <p class="text-center text-sm mt-6 text-slate-500">
+                        Don't have an account? <a href="#" onclick="toggleAuth(false)" class="text-primary font-bold hover:underline">Register as Teacher</a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Register Form -->
+            <div id="register-form" class="hidden">
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Full Name</label>
+                        <input type="text" id="reg-name" class="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 transition" placeholder="Prof. John Doe">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Email Address</label>
+                        <input type="email" id="reg-email" class="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 transition" placeholder="teacher@arschool.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Password</label>
+                        <input type="password" id="reg-password" class="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 transition" placeholder="••••••••">
+                    </div>
+                    <button onclick="handleRegister()" id="reg-btn" class="w-full purple-gradient text-white py-4 rounded-2xl font-bold shadow-xl hover:opacity-95 transition transform active:scale-[0.98]">Create Account</button>
+                    <p class="text-center text-sm mt-6 text-slate-500">
+                        Already registered? <a href="#" onclick="toggleAuth(true)" class="text-primary font-bold hover:underline">Sign In</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard Section -->
+    <div id="main-content" class="hidden min-h-screen">
+        <!-- Navigation -->
+        <nav class="fixed top-0 left-0 right-0 z-40 glass py-4 px-6 flex items-center justify-between soft-shadow">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 purple-gradient rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-md">
+                    <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+                </div>
+                <span class="text-xl font-bold tracking-tight hidden sm:block">AR Teacher</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-primary transition">
+                    <i data-lucide="moon" class="w-5 h-5 dark:hidden"></i>
+                    <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                </button>
+                <div class="h-8 w-[1px] bg-slate-200 dark:bg-slate-700"></div>
+                <button onclick="logout()" class="flex items-center gap-2 text-red-500 font-semibold hover:bg-red-50 dark:hover:bg-red-900/10 px-4 py-2.5 rounded-xl transition">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                    <span class="hidden md:inline">Logout</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Dashboard Content -->
+        <main class="pt-28 pb-20 px-4 md:px-8 max-w-7xl mx-auto">
+            <header class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+                <div>
+                    <h2 class="text-3xl font-bold" id="welcome-msg">Welcome, Teacher</h2>
+                    <p class="text-slate-500 dark:text-slate-400 mt-1">Manage your virtual classrooms and student progress.</p>
+                </div>
+                <button onclick="openModal('create-class-modal')" class="flex items-center justify-center gap-2 px-6 py-3.5 purple-gradient text-white rounded-2xl font-bold shadow-lg hover:scale-[1.02] transition active:scale-[0.98]">
+                    <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                    Create New Class
+                </button>
+            </header>
+
+            <!-- Tabs -->
+            <div class="flex gap-2 mb-8 overflow-x-auto pb-2">
+                <button onclick="switchView('classes')" id="btn-view-classes" class="whitespace-nowrap px-6 py-3 rounded-2xl font-bold transition purple-gradient text-white">My Classes</button>
+                <button onclick="switchView('assignments')" id="btn-view-assignments" class="whitespace-nowrap px-6 py-3 rounded-2xl font-bold transition bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-purple-50">Assignments</button>
+            </div>
+
+            <!-- Classes Grid -->
+            <div id="view-classes" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Skeleton Loader -->
+                <div class="glass-card h-64 animate-pulse"></div>
+                <div class="glass-card h-64 animate-pulse"></div>
+                <div class="glass-card h-64 animate-pulse"></div>
+            </div>
+
+            <!-- Assignments List -->
+            <div id="view-assignments" class="hidden space-y-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold">Recent Assignments</h3>
+                </div>
+                <div id="assignments-list" class="space-y-4">
+                    <!-- Dynamic -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create Class Modal -->
+    <div id="create-class-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
+        <div class="glass-card w-full max-w-lg p-8 transform transition-all scale-95 opacity-0" id="class-modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold">Create Class</h3>
+                <button onclick="closeModal('create-class-modal')" class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition"><i data-lucide="x"></i></button>
+            </div>
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Class Name</label>
+                    <input type="text" id="class-name" class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" placeholder="Grade 10 - Mathematics">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Subject</label>
+                    <input type="text" id="class-subject" class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700" placeholder="Algebra & Geometry">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Banner Image</label>
+                    <div class="relative group">
+                        <input type="file" id="class-banner" class="hidden" accept="image/*" onchange="previewFile(this, 'banner-preview')">
+                        <label for="class-banner" class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-2xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition overflow-hidden">
+                            <div id="banner-preview" class="absolute inset-0 hidden"><img src="" class="w-full h-full object-cover"></div>
+                            <div class="flex flex-col items-center justify-center py-5 text-slate-500">
+                                <i data-lucide="image" class="w-8 h-8 mb-2"></i>
+                                <p class="text-xs">Click to upload banner</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <button onclick="handleCreateClass()" id="create-class-btn" class="w-full purple-gradient text-white py-4 rounded-2xl font-bold shadow-lg hover:opacity-95 transition">Initialize Class</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Assignment Modal -->
+    <div id="create-assignment-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
+        <div class="glass-card w-full max-w-lg p-8" id="assignment-modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold">New Assignment</h3>
+                <button onclick="closeModal('create-assignment-modal')" class="p-2 rounded-full hover:bg-slate-100 transition"><i data-lucide="x"></i></button>
+            </div>
+            <div class="space-y-4">
+                <input type="hidden" id="target-class-id">
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Title</label>
+                    <input type="text" id="assign-title" class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border" placeholder="Weekly Quiz #1">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Description</label>
+                    <textarea id="assign-desc" rows="3" class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border" placeholder="Detailed instructions..."></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Due Date</label>
+                        <input type="date" id="assign-due" class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Points</label>
+                        <input type="number" id="assign-points" class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border" value="100">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Attachment (PDF/Image)</label>
+                    <input type="file" id="assign-file" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-primary hover:file:bg-purple-100">
+                </div>
+                <button onclick="handleCreateAssignment()" id="create-assign-btn" class="w-full purple-gradient text-white py-4 rounded-2xl font-bold shadow-lg">Post Assignment</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, getDocs, collection, addDoc, query, where, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase with Unique App Name for Teacher
+        const app = initializeApp(firebaseConfig, "ARTeacherApp");
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Global State
+        let currentUser = null;
+
+        // --- Authentication ---
+
+        window.handleLogin = async () => {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            if(!email || !password) return toast('Fields cannot be empty', 'warning');
+
+            showBtnLoading('login-btn', true);
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                toast('Welcome back!', 'success');
+            } catch (error) {
+                toast(error.message, 'error');
+            } finally {
+                showBtnLoading('login-btn', false);
+            }
+        };
+
+        window.handleRegister = async () => {
+            const name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            
+            if(!name || !email || !password) return toast('All fields are required', 'warning');
+
+            // Check if registration is allowed (Admin Setting)
+            const settingsDoc = await getDoc(doc(db, "settings", "registration"));
+            if (settingsDoc.exists() && !settingsDoc.data().allowTeacherReg) {
+                return toast('Teacher registration is currently disabled by Admin.', 'error');
+            }
+
+            showBtnLoading('reg-btn', true);
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                await setDoc(doc(db, "users", user.uid), {
+                    uid: user.uid,
+                    name: name,
+                    email: email,
+                    role: 'teacher',
+                    createdAt: new Date().toISOString()
+                });
+
+                toast('Account created successfully', 'success');
+            } catch (error) {
+                toast(error.message, 'error');
+            } finally {
+                showBtnLoading('reg-btn', false);
+            }
+        };
+
+        window.logout = async () => {
+            await signOut(auth);
+            location.reload();
+        };
+
+        // --- Core Logic ---
+
+        onAuthStateChanged(auth, async (user) => {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            const authSection = document.getElementById('auth-section');
+            const mainContent = document.getElementById('main-content');
+
+            if (user) {
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                if (userDoc.exists() && userDoc.data().role === 'teacher') {
+                    currentUser = userDoc.data();
+                    document.getElementById('welcome-msg').textContent = `Welcome, ${currentUser.name.split(' ')[0]} 👋`;
+                    authSection.classList.add('hidden');
+                    mainContent.classList.remove('hidden');
+                    loadDashboardData();
+                } else {
+                    await signOut(auth);
+                    toast('Teacher access only', 'error');
+                    authSection.classList.remove('hidden');
+                }
+            } else {
+                authSection.classList.remove('hidden');
+                mainContent.classList.add('hidden');
+            }
+            lucide.createIcons();
+            loadingOverlay.style.opacity = '0';
+            setTimeout(() => loadingOverlay.classList.add('hidden'), 500);
+        });
+
+        // --- Class & Assignment Management ---
+
+        window.handleCreateClass = async () => {
+            const name = document.getElementById('class-name').value;
+            const subject = document.getElementById('class-subject').value;
+            const bannerFile = document.getElementById('class-banner').files[0];
+
+            if(!name || !subject) return toast('Please provide name and subject', 'warning');
+
+            showBtnLoading('create-class-btn', true);
+            try {
+                let bannerUrl = 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&q=80&w=1000';
+                if(bannerFile) {
+                    bannerUrl = await uploadToCloudinary(bannerFile);
+                }
+
+                const joinCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+                await addDoc(collection(db, "classes"), {
+                    name,
+                    subject,
+                    bannerUrl,
+                    joinCode,
+                    teacherId: currentUser.uid,
+                    teacherName: currentUser.name,
+                    createdAt: new Date().toISOString()
+                });
+
+                closeModal('create-class-modal');
+                toast('Classroom ready!', 'success');
+                // Reset form
+                document.getElementById('class-name').value = '';
+                document.getElementById('class-subject').value = '';
+                document.getElementById('banner-preview').classList.add('hidden');
+            } catch (err) {
+                toast(err.message, 'error');
+            } finally {
+                showBtnLoading('create-class-btn', false);
+            }
+        };
+
+        function loadDashboardData() {
+            // Listen for classes
+            const qClasses = query(collection(db, "classes"), where("teacherId", "==", currentUser.uid));
+            onSnapshot(qClasses, (snapshot) => {
+                const grid = document.getElementById('view-classes');
+                grid.innerHTML = '';
+                if(snapshot.empty) {
+                    grid.innerHTML = `<div class="col-span-full py-12 text-center text-slate-500">No classes created yet. Get started by clicking "Create New Class".</div>`;
+                }
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const id = docSnap.id;
+                    grid.innerHTML += `
+                        <div class="glass-card overflow-hidden soft-shadow group hover:-translate-y-1 transition duration-300">
+                            <div class="h-32 w-full relative">
+                                <img src="${data.bannerUrl}" class="w-full h-full object-cover">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
+                                    <span class="text-white font-bold text-lg">${data.name}</span>
+                                </div>
+                            </div>
+                            <div class="p-5">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <p class="text-xs font-bold text-primary uppercase tracking-wider">${data.subject}</p>
+                                        <div class="mt-2 flex items-center gap-1 text-sm bg-purple-50 dark:bg-slate-800 text-primary px-2 py-1 rounded-lg w-fit">
+                                            <span class="font-mono font-bold">${data.joinCode}</span>
+                                            <button onclick="copyJoinCode('${data.joinCode}')" class="hover:text-accent"><i data-lucide="copy" class="w-3 h-3"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-[10px] text-slate-400">Created ${new Date(data.createdAt).toLocaleDateString()}</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="openAssignModal('${id}', '${data.name}')" class="flex-1 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-primary hover:text-white rounded-xl text-sm font-bold transition">
+                                        + Assignment
+                                    </button>
+                                    <button class="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition">
+                                        <i data-lucide="external-link" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                lucide.createIcons();
+            });
+
+            // Listen for assignments
+            const qAssigns = query(collection(db, "assignments"), where("teacherId", "==", currentUser.uid), orderBy("createdAt", "desc"));
+            onSnapshot(qAssigns, (snapshot) => {
+                const list = document.getElementById('assignments-list');
+                list.innerHTML = '';
+                if(snapshot.empty) {
+                    list.innerHTML = `<div class="py-12 text-center text-slate-500">No assignments posted yet.</div>`;
+                }
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    list.innerHTML += `
+                        <div class="glass-card p-5 flex items-center justify-between group">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center text-primary">
+                                    <i data-lucide="file-text"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold">${data.title}</h4>
+                                    <p class="text-xs text-slate-500">Class: ${data.className} • Due: ${new Date(data.dueDate).toLocaleDateString()}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="text-right hidden sm:block">
+                                    <span class="text-xs font-bold px-2 py-1 bg-blue-50 text-blue-600 rounded-md">${data.points} Pts</span>
+                                </div>
+                                <button class="p-2 hover:bg-slate-100 rounded-lg transition"><i data-lucide="more-vertical" class="w-5 h-5 text-slate-400"></i></button>
+                            </div>
+                        </div>
+                    `;
+                });
+                lucide.createIcons();
+            });
+        }
+
+        window.handleCreateAssignment = async () => {
+            const classId = document.getElementById('target-class-id').value;
+            const className = document.getElementById('target-class-id').dataset.name;
+            const title = document.getElementById('assign-title').value;
+            const desc = document.getElementById('assign-desc').value;
+            const due = document.getElementById('assign-due').value;
+            const points = document.getElementById('assign-points').value;
+            const fileInput = document.getElementById('assign-file').files[0];
+
+            if(!title || !due) return toast('Title and Due Date are required', 'warning');
+
+            showBtnLoading('create-assign-btn', true);
+            try {
+                let fileUrl = '';
+                if(fileInput) {
+                    fileUrl = await uploadToCloudinary(fileInput);
+                }
+
+                await addDoc(collection(db, "assignments"), {
+                    classId,
+                    className,
+                    teacherId: currentUser.uid,
+                    title,
+                    description: desc,
+                    dueDate: due,
+                    points: parseInt(points),
+                    fileUrl,
+                    createdAt: new Date().toISOString()
+                });
+
+                closeModal('create-assignment-modal');
+                toast('Assignment posted successfully!', 'success');
+            } catch (err) {
+                toast(err.message, 'error');
+            } finally {
+                showBtnLoading('create-assign-btn', false);
+            }
+        };
+
+        // --- UI Helpers ---
+
+        window.openAssignModal = (classId, className) => {
+            document.getElementById('target-class-id').value = classId;
+            document.getElementById('target-class-id').dataset.name = className;
+            openModal('create-assignment-modal');
+        };
+
+        window.toggleAuth = (showLogin) => {
+            document.getElementById('login-form').classList.toggle('hidden', !showLogin);
+            document.getElementById('register-form').classList.toggle('hidden', showLogin);
+        };
+
+        window.switchView = (view) => {
+            document.getElementById('view-classes').classList.toggle('hidden', view !== 'classes');
+            document.getElementById('view-assignments').classList.toggle('hidden', view !== 'assignments');
+            
+            document.getElementById('btn-view-classes').className = view === 'classes' 
+                ? 'whitespace-nowrap px-6 py-3 rounded-2xl font-bold transition purple-gradient text-white'
+                : 'whitespace-nowrap px-6 py-3 rounded-2xl font-bold transition bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-purple-50';
+            
+            document.getElementById('btn-view-assignments').className = view === 'assignments'
+                ? 'whitespace-nowrap px-6 py-3 rounded-2xl font-bold transition purple-gradient text-white'
+                : 'whitespace-nowrap px-6 py-3 rounded-2xl font-bold transition bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-purple-50';
+        };
+
+        window.openModal = (id) => {
+            const modal = document.getElementById(id);
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                const content = modal.querySelector('.glass-card');
+                content.classList.remove('scale-95', 'opacity-0');
+            }, 10);
+        };
+
+        window.closeModal = (id) => {
+            const modal = document.getElementById(id);
+            const content = modal.querySelector('.glass-card');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 200);
+        };
+
+        window.previewFile = (input, previewId) => {
+            const file = input.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const preview = document.getElementById(previewId);
+                    preview.querySelector('img').src = e.target.result;
+                    preview.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        window.copyJoinCode = (code) => {
+            navigator.clipboard.writeText(code);
+            toast('Join code copied!', 'info');
+        };
+
+        window.toggleDarkMode = () => {
+            document.documentElement.classList.toggle('dark');
+        };
+
+        function toast(msg, icon = 'info') {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+            Toast.fire({ icon, title: msg });
+        }
+
+        function showBtnLoading(id, loading) {
+            const btn = document.getElementById(id);
+            if(!btn) return;
+            if(loading) {
+                btn.dataset.original = btn.innerHTML;
+                btn.innerHTML = `<div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto"></div>`;
+                btn.disabled = true;
+            } else {
+                btn.innerHTML = btn.dataset.original;
+                btn.disabled = false;
+            }
+        }
+
+        // --- Cloudinary Helper ---
+        async function uploadToCloudinary(file) {
+            const cloudName = "dbfdguefj";
+            const uploadPreset = "ml_default";
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("upload_preset", uploadPreset);
+
+            const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
+                method: "POST",
+                body: formData
+            });
+            const data = await response.json();
+            return data.secure_url;
+        }
+    </script>
+</body>
+</html>
